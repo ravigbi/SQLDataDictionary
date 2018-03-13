@@ -49,7 +49,13 @@
     <Reports>@(Report)</Reports>
   </PropertyGroup>
   <ItemGroup>
+    <DataSet Include="DataDictionaryDataSet.rsd" />
+  </ItemGroup>
+  <ItemGroup>
     <DataSource Include="localhost.rds" />
+  </ItemGroup>
+  <ItemGroup>
+    <Report Include="SQLDataDictionary.rdl" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Reporting Services\Microsoft.ReportingServices.MSBuilder.targets" />
 </Project>
