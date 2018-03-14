@@ -49,7 +49,9 @@
     <Reports>@(Report)</Reports>
   </PropertyGroup>
   <ItemGroup>
+    <DataSet Include="CurrentDatabaseNameDataSet.rsd" />
     <DataSet Include="DataDictionaryDataSet.rsd" />
+    <DataSet Include="ListOfDatabasesDataSet.rsd" />
   </ItemGroup>
   <ItemGroup>
     <DataSource Include="localhost.rds" />
