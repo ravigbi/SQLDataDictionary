@@ -6,61 +6,62 @@
   <DataSources>
     <DataSource Name="localhost">
       <DataSourceReference>localhost</DataSourceReference>
-      <rd:SecurityType>None</rd:SecurityType>
+      <rd:SecurityType>Integrated</rd:SecurityType>
       <rd:DataSourceID>ff5c4e88-fcc4-4705-b1bf-52c741576600</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
     <DataSet Name="DataDictionaryDataSet">
-      <SharedDataSet>
-        <SharedDataSetReference>DataDictionaryDataSet</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>localhost</DataSourceName>
+        <CommandText>="SELECT tbl.object_id, 	sch.name as [Schema Name],	tbl.name [Table Name], 	col.column_id [Column Id],	col.name [Column Name], 	CASE 		WHEN typ.name IN ('varchar', 'char', 'nvarchar', 'nchar') 			THEN CONCAT(typ.name, ' (', cast(col.max_length as varchar(10)), ')')		WHEN typ.name IN ('decimal', 'numeric') 			THEN CONCAT(typ.name, ' (', cast(col.precision as varchar(3)), ', ', cast(col.scale as varchar(3)),')')		ELSE typ.name	END as [Data Type],	CASE 		WHEN col.is_nullable = 1 		THEN 'Y' 		ELSE 'N' 	END as [Is Nullable],	exp.value as [Column Description],	expst.value as [Table Description] from " &amp; Parameters!DatabaseNameParameter.Value &amp; ".sys.tables tbl INNER JOIN " &amp; Parameters!DatabaseNameParameter.Value &amp; ".sys.schemas sch 	ON sch.schema_id = tbl.schema_id LEFT OUTER JOIN " &amp; Parameters!DatabaseNameParameter.Value &amp; ".sys.columns col 	ON tbl.object_id = col.object_id LEFT OUTER JOIN " &amp; Parameters!DatabaseNameParameter.Value &amp; ".sys.types typ 	ON typ.user_type_id = col.user_type_id LEFT OUTER JOIN " &amp; Parameters!DatabaseNameParameter.Value &amp; ".sys.extended_properties exp 	ON exp.major_id = tbl.object_id 	and exp.minor_id = col.column_id	and exp.name = 'MS_Description' LEFT OUTER JOIN " &amp; Parameters!DatabaseNameParameter.Value &amp; ".sys.extended_properties expst 	ON expst.major_id = tbl.object_id 	and expst.minor_id = 0 	and exp.name = 'MS_Description' WHERE [type] = 'U'	AND tbl.name &lt;&gt; '__RefactorLog' ORDER BY sch.[name], tbl.[Name], col.column_id"</CommandText>
+      </Query>
       <Fields>
-        <Field Name="Schema_Name">
-          <DataField>Schema_Name</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
         <Field Name="object_id">
           <DataField>object_id</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
-        <Field Name="Table_Name">
-          <DataField>Table_Name</DataField>
+        <Field Name="Schema_Name">
+          <DataField>Schema Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Data_Type">
-          <DataField>Data_Type</DataField>
+        <Field Name="Table_Name">
+          <DataField>Table Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="Column_Id">
-          <DataField>Column_Id</DataField>
+          <DataField>Column Id</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Column_Name">
+          <DataField>Column Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Data_Type">
+          <DataField>Data Type</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
         <Field Name="Is_Nullable">
-          <DataField>Is_Nullable</DataField>
+          <DataField>Is Nullable</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="Column_Description">
-          <DataField>Column_Description</DataField>
+          <DataField>Column Description</DataField>
           <rd:TypeName>System.Object</rd:TypeName>
         </Field>
-        <Field Name="Column_Name">
-          <DataField>Column_Name</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
         <Field Name="Table_Description">
-          <DataField>Table_Description</DataField>
+          <DataField>Table Description</DataField>
           <rd:TypeName>System.Object</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
-    <DataSet Name="CurrentDatabaseNameDataSet">
+    <DataSet Name="ListOfDatabasesDataSet">
       <SharedDataSet>
-        <SharedDataSetReference>CurrentDatabaseNameDataSet</SharedDataSetReference>
+        <SharedDataSetReference>ListOfDatabasesDataSet</SharedDataSetReference>
       </SharedDataSet>
       <Fields>
-        <Field Name="Current_Database">
-          <DataField>Current_Database</DataField>
+        <Field Name="Database_Name">
+          <DataField>Database_Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -252,12 +253,6 @@
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Table_Description.Value</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                  </Style>
-                                </TextRun>
-                                <TextRun>
-                                  <Value>Lig</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
                                   </Style>
@@ -523,7 +518,7 @@
                               <Paragraph>
                                 <TextRuns>
                                   <TextRun>
-                                    <Value>=Fields!Table_Name.Value</Value>
+                                    <Value>=Fields!Schema_Name.Value &amp; "." &amp; Fields!Table_Name.Value</Value>
                                     <Style>
                                       <FontFamily>Arial</FontFamily>
                                     </Style>
@@ -652,7 +647,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=First(Fields!Current_Database.Value, "CurrentDatabaseNameDataSet")</Value>
+                      <Value>=Parameters!DatabaseNameParameter.Value</Value>
                       <Style>
                         <FontFamily>Verdana</FontFamily>
                         <FontSize>22pt</FontSize>
@@ -783,10 +778,30 @@
       </Page>
     </ReportSection>
   </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="DatabaseNameParameter">
+      <DataType>String</DataType>
+      <Prompt>Select Database</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>ListOfDatabasesDataSet</DataSetName>
+          <ValueField>Database_Name</ValueField>
+          <LabelField>Database_Name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>4</NumberOfColumns>
       <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>DatabaseNameParameter</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
     </GridLayoutDefinition>
   </ReportParametersLayout>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>

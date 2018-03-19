@@ -2,7 +2,7 @@
 <RptDataSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="localhost">
   <ConnectionProperties>
     <Extension>SQL</Extension>
-    <ConnectString>Data Source=.;Initial Catalog=ResiDataWarehouse</ConnectString>
+    <ConnectString>Data Source=.;Initial Catalog=tempdb</ConnectString>
     <IntegratedSecurity>true</IntegratedSecurity>
   </ConnectionProperties>
   <DataSourceID>3b5a2335-d1f8-4d52-a1ed-969b7eb6884e</DataSourceID>
